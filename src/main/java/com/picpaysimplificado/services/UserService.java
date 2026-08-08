@@ -1,0 +1,67 @@
+package com.picpaysimplificado.services;
+
+import com.picpaysimplificado.domain.user.User;
+import com.picpaysimplificado.domain.user.UserType;
+import com.picpaysimplificado.dtos.UserDTO;
+import com.picpaysimplificado.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+
+    public void validateTransaction(User sender, BigDecimal amount) throws Exception {
+        if (sender.getUserType() == UserType.MERCHANT) {
+            throw new Exception("Usuários do tipo Lojista não estão autorizados a realizar transferências.");
+        }
+
+        if (sender.getBalance().compareTo(amount) < 0) {
+            throw new Exception("Saldo insuficiente para realizar a transferência.");
+        }
+    }
+
+    public User findUserById(Long id) throws Exception {
+        return this.repository.findUserById(id)
+                .orElseThrow(() -> new Exception("Usuário não encontrado."));
+    }
+
+    public User createUser(UserDTO data) {
+        User newUser = new User();
+        newUser.setFirstName(data.firstName());
+        newUser.setLastName(data.lastName());
+        newUser.setBalance(data.balance());
+        newUser.setDocument(data.document());
+        newUser.setEmail(data.email());
+        newUser.setPassword(data.password());
+        newUser.setUserType(data.userType());
+
+        this.saveUser(newUser);
+        return newUser;
+    }
+
+    public List<User> getAllUsers() {
+        return this.repository.findAll();
+    }
+
+    public void saveUser(User user) {
+        this.repository.save(user);
+    }
+
+    public User deposit(Long id, BigDecimal amount) throws Exception {
+        User user = this.findUserById(id);
+
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new Exception("O valor do depósito deve ser maior que zero.");
+        }
+
+        user.setBalance(user.getBalance().add(amount));
+        this.saveUser(user);
+        return user;
+    }
+}

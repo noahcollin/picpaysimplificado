@@ -1,0 +1,170 @@
+### 1. Criar Usuário Comum (Pagador - ID 1)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "firstName": "João",
+  "lastName": "Gabriel",
+  "document": "12345678900",
+  "email": "joao@email.com",
+  "password": "senha123",
+  "balance": 500.00,
+  "userType": "COMMON"
+}
+
+###
+
+### 2. Criar Lojista (Recebedor - ID 2)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "firstName": "Loja",
+  "lastName": "Tech",
+  "document": "12345678000199",
+  "email": "contato@lojatech.com",
+  "password": "senha123",
+  "balance": 1000.00,
+  "userType": "MERCHANT"
+}
+
+###
+
+### 3. Listar Todos os Usuários
+GET http://localhost:8080/users
+
+###
+
+### 4. Efetuar Transferência Válida (R$ 100,00 do João para a Loja)
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 100.0,
+  "payer": 1,
+  "payee": 2
+}
+
+###
+
+### 5. [TESTE DE ERRO] Lojista tentando enviar dinheiro
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 50.0,
+  "payer": 2,
+  "payee": 1
+}
+
+###
+
+### 6. [TESTE DE ERRO] Saldo Insuficiente
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 9999.0,
+  "payer": 1,
+  "payee": 2
+}
+
+### 7. Depositar dinheiro na conta do João (ID 1)
+POST http://localhost:8080/users/1/deposit
+Content-Type: application/json
+
+{
+  "value": 250.00
+}
+
+###
+
+### 8. [TESTE DE ERRO] Tentativa de autotransferência (mesma conta)
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 50.0,
+  "payer": 1,
+  "payee": 1
+}
+
+### 9. [TESTE DE ERRO] Tentar cadastrar usuário com CPF já existente (Erro 400)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "firstName": "Outro",
+  "lastName": "Usuário",
+  "document": "12345678900",
+  "email": "diferente@email.com",
+  "password": "senha",
+  "balance": 100.00,
+  "userType": "COMMON"
+}
+
+###
+
+### 10. [TESTE DE ERRO] Tentar cadastrar usuário com E-mail já existente (Erro 400)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "firstName": "Outro",
+  "lastName": "Usuário",
+  "document": "99999999999",
+  "email": "joao@email.com",
+  "password": "senha",
+  "balance": 100.00,
+  "userType": "COMMON"
+}
+
+###
+
+### 11. [TESTE DE ERRO] Transferência para Usuário Inexistente (ID 999)
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 50.0,
+  "payer": 1,
+  "payee": 999
+}
+
+###
+
+### 12. [TESTE DE ERRO] Depósito com valor negativo ou zero
+POST http://localhost:8080/users/1/deposit
+Content-Type: application/json
+
+{
+  "value": -50.00
+}
+
+###
+
+### 13. Cadastrar 2º Usuário Comum (ID 3) e Transferir entre Pessoas Físicas (COMMON -> COMMON)
+POST http://localhost:8080/users
+Content-Type: application/json
+
+{
+  "firstName": "Maria",
+  "lastName": "Oliveira",
+  "document": "55544433322",
+  "email": "maria@email.com",
+  "password": "senha",
+  "balance": 200.00,
+  "userType": "COMMON"
+}
+
+###
+
+### 14. Efetuar Transferência de Comum para Comum (João -> Maria)
+POST http://localhost:8080/transfer
+Content-Type: application/json
+
+{
+  "value": 30.0,
+  "payer": 1,
+  "payee": 5
+}
