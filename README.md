@@ -43,7 +43,7 @@ API RESTful desenvolvida em **Java 17** com **Spring Boot 3** que simula uma pla
 
 1. Clone o repositório:
    ```bash
-   git clone [https://github.com/SEU_USUARIO/picpaysimplificado.git](https://github.com/SEU_USUARIO/picpaysimplificado.git)
+   git clone [https://github.com/noahcollin/picpaysimplificado.git](https://github.com/noahcollin/picpaysimplificado.git)
 2. Abra o projeto na sua IDE (IntelliJ IDEA recomendada).
 3. Execute a classe principal `PicpaysimplificadoApplication.java`.
 4. A API estará rodando em `http://localhost:8080`.
